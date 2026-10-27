@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>0.0° 摄影</title>
+<meta name="description" content="摄影作品集">
+<meta name="theme-color" content="#0e0f10">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Noto+Serif+SC:wght@300;400&display=swap">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* Layout: compact plates on a graphite ground, one deliberate dark look.
+   A live dusk sea opens the page; each plate keeps one rule:
+   horizons on one line, justified rows, touchable water, a swatch book of skies. */
+:root {
+  --ground: #0e0f10;
+  --raise: #17191b;
+  --lb: #08090a;
+  --ink: #ece8e0;
+  --dim: #8f8b84;
+  --faint: #5b5954;
+  --hair: rgba(236, 232, 224, .13);
+  --horizon: rgba(236, 232, 224, .26);
+  --accent: #cdb88f;
+  --on-photo: #ffffff;
+  --sheet: #e8e4da;
+  --sheet-ink: #7a766d;
+  --shade: rgba(0, 0, 0, .72);
+  --blend: #ffffff;
+  --sky-zenith: #0e0f10;
+  --sky-low: #3a3330;
+  --sky-glow: #c98563;
+  --sea-deep: #080c0f;
+  --sun: #ffc49b;
+  --sun-x: 0.28;
+  --sun-y: 0.035;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "PingFang SC", "Microsoft YaHei", monospace;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  color-scheme: dark;
+}
+html { scroll-behavior: smooth; background: var(--ground); }
+body { background: var(--ground); color: var(--ink); font-family: var(--serif); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent); color: var(--ground); }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
+main { overflow-x: clip; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) { .wrap { padding-left: max(4vw, env(safe-area-inset-left, 0px)); padding-right: max(4vw, env(safe-area-inset-right, 0px)); } }
+.inner { max-width: 1360px; margin-inline: auto; }
+
+/* Fixed bar, inverted against whatever sits under it */
+.bar {
+  position: fixed; z-index: 30; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+  color: var(--blend); mix-blend-mode: difference; pointer-events: none;
+  font: 400 13px/1 var(--serif);
+}
+@media (min-width: 900px) { .bar { padding-left: max(4vw, env(safe-area-inset-left, 0px)); padding-right: max(4vw, env(safe-area-inset-right, 0px)); } }
+.bar a { pointer-events: auto; text-decoration: none; }
+.mark { letter-spacing: .36em; }
+.bar nav { display: flex; gap: clamp(14px, 1.8vw, 24px); }
+.bar nav a { position: relative; opacity: .55; transition: opacity .4s; }
+.bar nav a:hover, .bar nav a.on { opacity: 1; }
+.bar nav a::after {
+  content: ""; position: absolute; left: 50%; top: calc(100% + 7px); width: 3px; height: 3px; border-radius: 50%;
+  background: currentColor; transform: translateX(-50%) scale(0); transition: transform .5s var(--ease);
+}
+.bar nav a.on::after { transform: translateX(-50%) scale(1); }
+
+/* Hero: a live dusk sea and an electronic level */
+.hero {
+  position: relative; overflow: hidden; height: clamp(340px, 64svh, 800px); --hz: 56%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 80%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0, #000 80%, transparent 100%);
+}
+@media (orientation: portrait) { .hero { height: clamp(420px, 70svh, 920px); --hz: 54%; } }
+.hero-sky {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, var(--sky-zenith) 0%, var(--sky-low) calc(var(--hz) - .2%), var(--sea-deep) var(--hz), var(--sea-deep) 100%);
+}
+#sea-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.motto {
+  position: absolute; left: 0; right: 0; bottom: calc(100% - var(--hz) + clamp(40px, 8vh, 88px));
+  margin: 0; padding-inline: 16px; text-align: center;
+  font: 300 clamp(14px, 1.35vw, 18px)/1.6 var(--serif); letter-spacing: .44em; text-indent: .44em;
+  animation: settle 2.4s var(--ease) both;
+}
+@keyframes settle { from { letter-spacing: .7em; text-indent: .7em; opacity: .3; filter: blur(5px); } }
+.gauge {
+  position: absolute; left: 50%; top: var(--hz); width: min(560px, 74vw); transform: translate(-50%, -50%);
+  display: grid; grid-template-columns: 24px minmax(0, 1fr) 24px; align-items: center; gap: 10px;
+  color: var(--ink); transition: color .5s;
+}
+.gauge.level { color: var(--accent); }
+.gauge .tick { height: 1px; background: currentColor; }
+.gauge .arm { height: 1px; background: currentColor; opacity: .6; }
+.gauge .deg {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  font: 300 10.5px/1 var(--mono); letter-spacing: .12em; font-variant-numeric: tabular-nums;
+}
+
+/* Chapter rows */
+.ch { display: flex; align-items: baseline; gap: 14px; padding-block: clamp(48px, 8vh, 88px) clamp(14px, 2.2vh, 22px); }
+.ch h2 { margin: 0; font: 400 clamp(20px, 1.8vw, 26px)/1 var(--serif); letter-spacing: .12em; }
+.ch .en, .ch .ct, .ch .hint { font: 300 10.5px/1 var(--mono); letter-spacing: .26em; color: var(--dim); white-space: nowrap; }
+.ch .rule { flex: 1; align-self: center; height: 1px; background: var(--hair); min-width: 16px; }
+.ch .ct { font-variant-numeric: tabular-nums; }
+.ch .hint { color: var(--accent); letter-spacing: .2em; }
+.ch .hint[hidden] { display: none; }
+#sea .ch { padding-top: clamp(8px, 2vh, 24px); }
+@media (max-width: 520px) { .ch .en { display: none; } }
+
+/* Plates and tiles */
+.plate { display: flex; flex-wrap: wrap; gap: 10px; }
+.plate > .track { display: contents; }
+.ph { position: relative; flex: var(--r) var(--r) calc(var(--r) * 180px); cursor: zoom-in; outline: none; -webkit-tap-highlight-color: transparent; }
+.js .plate.laid { display: block; position: relative; }
+.js .plate.laid > .track { display: block; position: relative; height: 100%; }
+.js .plate.laid .ph { position: absolute; }
+.frame { position: relative; overflow: hidden; aspect-ratio: var(--ar); background: var(--raise); }
+.laid .frame { width: 100%; height: 100%; aspect-ratio: auto; }
+.frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.frame::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .5)); opacity: 0; transition: opacity .5s;
+}
+.ph figcaption {
+  position: absolute; left: 12px; bottom: 10px; display: flex; align-items: baseline; gap: 10px; pointer-events: none;
+  color: var(--on-photo); opacity: 0; transform: translateY(4px); transition: opacity .5s, transform .5s var(--ease);
+}
+.no { font: 300 10.5px/1 var(--mono); letter-spacing: .16em; }
+.tt { font: 400 13px/1 var(--serif); letter-spacing: .22em; }
+@media (hover: hover) {
+  .ph:hover .frame img { transform: scale(1.025); }
+  .ph:hover .frame::after, .ph:hover figcaption { opacity: 1; transform: none; }
+}
+.ph:focus-visible .frame::after, .ph:focus-visible figcaption { opacity: 1; transform: none; }
+.ph:focus-visible .frame { outline: 1px solid var(--accent); outline-offset: 3px; }
+.badge {
+  position: absolute; top: 9px; right: 9px; z-index: 2; padding: 4px 5px 3px; pointer-events: none;
+  font: 400 9px/1 var(--mono); letter-spacing: .18em; color: var(--on-photo); border: 1px solid currentColor; opacity: .85;
+}
+.js .ph .frame { transition: filter 1.6s var(--ease); }
+.js .ph.pre .frame { filter: grayscale(.85) brightness(.7); }
+
+/* 海: horizon lines behind the photos */
+.hz { position: absolute; left: 0; right: 0; height: 1px; background: var(--horizon); pointer-events: none; }
+.hz b { position: absolute; right: 16px; bottom: 8px; font: 300 10px/1 var(--mono); letter-spacing: .12em; color: var(--accent); font-weight: 300; }
+.hz b[hidden] { display: none; }
+.plate.swipe { overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; overscroll-behavior-x: contain; }
+.plate.swipe::-webkit-scrollbar { display: none; }
+.plate.swipe .ph { scroll-snap-align: center; }
+
+/* 水 */
+.rip { cursor: crosshair; }
+.rip canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s; touch-action: pan-y; }
+.rip canvas.ready { opacity: 1; }
+
+/* 天: swatch book of skies */
+.skies { --open: 240px; display: flex; flex-direction: column; gap: 8px; }
+.strip {
+  all: unset; box-sizing: border-box; width: 100%; cursor: pointer;
+  display: grid; grid-template-columns: 4.4em minmax(0, 1fr) clamp(64px, 10vw, 150px); gap: clamp(10px, 1.4vw, 20px);
+  height: 34px; transition: height .9s var(--ease);
+}
+.strip.open { height: var(--open); cursor: zoom-in; }
+.strip:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
+.sno { display: flex; align-items: center; gap: 10px; align-self: start; height: 34px; font: 300 10.5px/1 var(--mono); letter-spacing: .14em; color: var(--dim); white-space: nowrap; }
+.sno b { font: 400 14px/1 var(--serif); letter-spacing: .2em; color: var(--ink); font-weight: 400; }
+.simg { position: relative; overflow: hidden; min-width: 0; background: var(--raise); }
+.simg img { width: 100%; height: 100%; object-fit: cover; transition: filter .9s; }
+.strip:not(.open) .simg img { filter: saturate(.6) brightness(.8); }
+.strip:hover .simg img { filter: none; }
+.chips { display: flex; flex-direction: column-reverse; gap: 2px; min-width: 0; }
+.chips i { flex: 1; display: flex; align-items: center; gap: 10px; min-height: 0; font-style: normal; }
+.chips i::before { content: ""; align-self: stretch; width: 100%; max-width: 100%; background: var(--c); transition: max-width .9s var(--ease); }
+.strip.open .chips i::before { max-width: 22px; }
+.chips b { font: 300 10px/1 var(--mono); letter-spacing: .06em; color: var(--dim); white-space: nowrap; opacity: 0; transition: opacity .5s; font-weight: 300; }
+.strip.open .chips b { opacity: 1; transition-delay: .3s; }
+.skies.flat .strip { height: var(--open); cursor: zoom-in; grid-template-columns: 2.4em minmax(0, 1fr) 22px; gap: 10px; }
+.skies.flat .sno { flex-direction: column; align-items: flex-start; height: auto; gap: 8px; padding-top: 2px; }
+.skies.flat .chips i::before { max-width: 100%; }
+.skies.flat .chips b { display: none; }
+.skies.flat .simg img { filter: none; }
+
+/* 改: original and finished photo on one slider */
+.cmp { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.cmp-stage {
+  --x: 50%; position: relative; width: min(100%, calc(70svh * var(--a, 1.5))); aspect-ratio: var(--a, 1.5);
+  overflow: hidden; background: var(--raise); cursor: ew-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  transition: opacity .35s;
+}
+.cmp-stage.out { opacity: 0; }
+.cmp-stage img { position: absolute; display: block; pointer-events: none; -webkit-user-drag: none; }
+.cmp-o { inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.32) grayscale(.6); }
+.cmp-f { left: calc(var(--cx) * 100%); top: calc(var(--cy) * 100%); width: calc(var(--cw) * 100%); height: calc(var(--ch) * 100%); object-fit: cover; outline: 1px solid var(--accent); outline-offset: 0; }
+.cmp-b { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--x)) 0 0); }
+.cmp-b img { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cmp-stage.hdr .cmp-o { filter: none; }
+.cmp-stage.hdr .cmp-f { display: none; }
+.cmp-stage.hdr .cmp-b img { dynamic-range-limit: standard; }
+.cmp-bar { position: absolute; top: 0; bottom: 0; left: var(--x); width: 1px; margin-left: -.5px; background: var(--ink); opacity: .85; pointer-events: none; }
+.cmp-knob {
+  position: absolute; left: var(--x); top: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%;
+  border: 1px solid var(--ink); background: rgba(14, 15, 16, .35); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  display: grid; place-items: center; color: var(--ink); font: 300 11px/1 var(--mono); letter-spacing: 0; outline: none;
+}
+.cmp-knob:focus-visible { border-color: var(--accent); color: var(--accent); }
+.cmp-l, .cmp-r { position: absolute; top: 12px; font: 300 10px/1 var(--mono); letter-spacing: .26em; color: var(--on-photo); pointer-events: none; transition: opacity .3s; }
+.cmp-l { left: 12px; } .cmp-r { right: 12px; }
+.cmp-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; }
+.cmp-tabs button {
+  all: unset; cursor: pointer; display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 1px solid transparent;
+  color: var(--dim); transition: color .3s, border-color .3s;
+}
+.cmp-tabs button span { font: 300 10px/1 var(--mono); letter-spacing: .14em; }
+.cmp-tabs button b { font: 400 13px/1 var(--serif); letter-spacing: .2em; font-weight: 400; }
+.cmp-tabs button:hover, .cmp-tabs button[aria-selected="true"] { color: var(--ink); }
+.cmp-tabs button[aria-selected="true"] { border-color: var(--accent); }
+.cmp-tabs button:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
+.cmp-tabs button[hidden] { display: none; }
+.cmp-note { margin: 0; min-height: 1em; font: 300 10.5px/1 var(--mono); letter-spacing: .24em; color: var(--accent); }
+
+/* End: a stack of prints */
+.end { padding-top: clamp(64px, 11vh, 120px); }
+.end-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 5vw, 80px); align-items: center; }
+.stack-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.stack { all: unset; position: relative; display: block; width: min(72vw, 380px); aspect-ratio: 1; perspective: 1400px; cursor: pointer; }
+.stack:focus-visible { outline: 1px solid var(--accent); outline-offset: 8px; }
+.plane { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(var(--rx, 50deg)) rotateZ(var(--rz, -14deg)); transition: transform 1.2s var(--ease); }
+.print {
+  position: absolute; left: 50%; top: 50%; width: 56%; box-sizing: border-box; padding: 4.5% 4.5% 17%;
+  background: var(--sheet); backface-visibility: hidden;
+  transform: translate(-50%, -50%) translate3d(var(--x, 0%), var(--y, 0%), var(--z, 0px)) rotateZ(var(--r, 0deg));
+  transition: transform .95s var(--ease);
+  box-shadow: 0 0 0 .5px rgba(0, 0, 0, .06), 0 26px 40px -18px var(--shade);
+}
+.print img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.print em { position: absolute; left: 4.5%; bottom: 5.5%; font: 300 9.5px/1 var(--mono); font-style: normal; letter-spacing: .16em; color: var(--sheet-ink); }
+.print.fly {
+  transform: translate(-50%, -50%) translate3d(calc(var(--x, 0%) + 74%), calc(var(--y, 0%) - 34%), 300px) rotateZ(calc(var(--r, 0deg) + 26deg)) rotateX(-22deg);
+  transition: transform .55s cubic-bezier(.5, 0, .3, 1);
+}
+.hint-s { margin: 0; font: 300 10.5px/1 var(--mono); letter-spacing: .28em; color: var(--dim); }
+.who { margin: 0 0 22px; display: flex; align-items: baseline; gap: 16px; font: 300 clamp(18px, 1.6vw, 22px)/1 var(--serif); letter-spacing: .4em; }
+.who span { font: 300 10.5px/1 var(--mono); letter-spacing: .28em; color: var(--dim); }
+.facts { list-style: none; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--hair); display: flex; flex-direction: column; gap: 14px; }
+.facts li { display: grid; grid-template-columns: 4em minmax(0, 1fr); gap: 14px; align-items: baseline; font: 300 15px/1.5 var(--serif); letter-spacing: .08em; }
+.facts li > span:first-child { font: 300 10.5px/1 var(--mono); letter-spacing: .24em; color: var(--dim); }
+.facts a { text-decoration: none; border-bottom: 1px solid var(--hair); transition: border-color .3s; }
+.facts a:hover { border-color: var(--accent); }
+.facts small { font: 300 13px/1.5 var(--serif); color: var(--dim); margin-left: .8em; }
+.finale { position: relative; height: 110px; margin-top: clamp(40px, 8vh, 96px); color: var(--accent); }
+.finale::before { content: ""; position: absolute; left: 0; right: 0; top: 55%; height: 1px; background: currentColor; opacity: .55; }
+.finale span { position: absolute; bottom: calc(45% + 10px); font: 300 10.5px/1 var(--mono); letter-spacing: .14em; }
+.finale .l { left: max(16px, env(safe-area-inset-left, 0px)); color: var(--dim); letter-spacing: .3em; }
+.finale .r { right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) {
+  .finale .l { left: max(4vw, env(safe-area-inset-left, 0px)); }
+  .finale .r { right: max(4vw, env(safe-area-inset-right, 0px)); }
+}
+@media (max-width: 760px) {
+  .end-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Lightbox */
+.lb { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: var(--lb); color: var(--ink); overflow: hidden; }
+.lb[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; animation: lbIn .45s var(--ease); }
+.lb::backdrop { background: var(--lb); }
+@keyframes lbIn { from { opacity: 0; } }
+.lb-stage { position: relative; min-height: 0; display: flex; align-items: center; justify-content: center; touch-action: pan-y;
+  padding: calc(env(safe-area-inset-top, 0px) + 54px) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
+.lb-stage img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: opacity .35s, transform .6s var(--ease); }
+.lb-stage img.out { opacity: 0; transform: scale(.985); }
+.lb-hit { all: unset; position: absolute; top: 0; bottom: 0; width: 34%; }
+.lb-hit.prev { left: 0; cursor: w-resize; }
+.lb-hit.next { right: 0; cursor: e-resize; }
+.lb-bar { display: flex; align-items: center; gap: 18px; padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px)); }
+@media (min-width: 900px) { .lb-bar { padding-left: max(4vw, env(safe-area-inset-left, 0px)); padding-right: max(4vw, env(safe-area-inset-right, 0px)); } }
+.lb-bar .no { color: var(--dim); font-variant-numeric: tabular-nums; }
+.lb-bar .tt { color: var(--ink); }
+.lb-bar .sp { flex: 1; }
+.lb-btn { all: unset; cursor: pointer; font: 300 12px/1 var(--mono); letter-spacing: .14em; color: var(--dim); padding: 8px 6px; transition: color .3s; }
+.lb-btn:hover { color: var(--ink); }
+.lb-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+.lb-close { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 12px); right: max(12px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) { .lb-close { right: max(4vw, env(safe-area-inset-right, 0px)); } }
+.chip { all: unset; cursor: pointer; font: 400 9px/1 var(--mono); letter-spacing: .2em; padding: 5px 7px 4px; border: 1px solid var(--accent); color: var(--accent); }
+.chip[aria-pressed="false"] { border-color: var(--dim); color: var(--dim); }
+.chip:disabled { cursor: default; border-color: var(--faint); color: var(--dim); }
+.chip[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .motto, .lb[open] { animation: none; }
+  .js .ph.pre .frame { filter: none; }
+}
+</style>
+
+</head>
+<body>
+<header class="bar">
+  <a class="mark" href="#top">0.0°</a>
+  <nav aria-label="章节">
+    <a href="#sea">海</a><a href="#wing">羽</a><a href="#water">水</a><a href="#interval">间</a><a href="#sky">天</a><a href="#edit">改</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <h1 class="vh">摄影作品集</h1>
+    <div class="hero-sky"></div>
+    <canvas id="sea-gl" aria-hidden="true"></canvas>
+    <p class="motto">把眼睛看到的亮度，原样留下。</p>
+    <div class="gauge" id="gauge" aria-hidden="true">
+      <b class="tick"></b><i class="arm" id="gauge-arm"></i><b class="tick"></b>
+      <span class="deg" id="gauge-deg">+3.4°</span>
+    </div>
+  </section>
+
+  <section class="wrap" id="sea" aria-label="海">
+    <div class="inner">
+      <header class="ch"><h2>海</h2><span class="en">SEA LEVEL</span><i class="rule"></i><span class="hint" id="swipe-hint" hidden>滑动 →</span><span class="ct">05</span></header>
+      <div class="plate" id="plate-sea">
+        <div class="track">
+          <figure class="ph" data-n="01" data-t="瞭望" data-full="img/watch.jpg" data-r="1.7778" style="--r:1.7778" tabindex="0" role="button" aria-label="01 瞭望" data-h="0.255"><div class="frame" style="--ar:2000/1125"><img src="img/watch-s.jpg" srcset="img/watch-s.jpg 960w, img/watch.jpg 2000w" sizes="(max-width: 760px) 86vw, 44vw" width="2000" height="1125" alt="雾中海面上的瞭望塔，两人站在水里" loading="lazy" decoding="async"></div><figcaption><span class="no">01</span><span class="tt">瞭望</span></figcaption></figure>
+          <figure class="ph" data-n="02" data-t="礁" data-full="img/reef.jpg" data-r="0.8000" style="--r:0.8000" tabindex="0" role="button" aria-label="02 礁" data-h="0.504"><div class="frame" style="--ar:1200/1500"><img src="img/reef-s.jpg" srcset="img/reef-s.jpg 768w, img/reef.jpg 1200w" sizes="(max-width: 760px) 86vw, 44vw" width="1200" height="1500" alt="平静海面中央的一块礁石" loading="lazy" decoding="async"></div><figcaption><span class="no">02</span><span class="tt">礁</span></figcaption></figure>
+          <figure class="ph" data-n="03" data-t="航迹" data-full="img/wake.jpg" data-r="1.4993" style="--r:1.4993" tabindex="0" role="button" aria-label="03 航迹" data-h="0.334" data-hdr="1"><div class="frame" style="--ar:2000/1334"><img src="img/wake-s.jpg" srcset="img/wake-s.jpg 960w, img/wake.jpg 2000w" sizes="(max-width: 760px) 86vw, 44vw" width="2000" height="1334" alt="快艇在深蓝海面上拖出白色航迹" loading="lazy" decoding="async"><span class="badge">HDR</span></div><figcaption><span class="no">03</span><span class="tt">航迹</span></figcaption></figure>
+          <figure class="ph" data-n="04" data-t="向海" data-full="img/toward.jpg" data-r="2.3895" style="--r:2.3895" tabindex="0" role="button" aria-label="04 向海" data-h="0.413"><div class="frame" style="--ar:2000/837"><img src="img/toward-s.jpg" srcset="img/toward-s.jpg 960w, img/toward.jpg 2000w" sizes="(max-width: 760px) 86vw, 44vw" width="2000" height="837" alt="孩子沿着防波堤向海跑去" loading="lazy" decoding="async"></div><figcaption><span class="no">04</span><span class="tt">向海</span></figcaption></figure>
+          <figure class="ph" data-n="05" data-t="搁浅" data-full="img/stranded.jpg" data-r="0.6670" style="--r:0.6670" tabindex="0" role="button" aria-label="05 搁浅" data-h="0.708"><div class="frame" style="--ar:1334/2000"><img src="img/stranded-s.jpg" srcset="img/stranded-s.jpg 640w, img/stranded.jpg 1334w" sizes="(max-width: 760px) 86vw, 44vw" width="1334" height="2000" alt="夕阳下搁浅的货轮，海鸥在上空盘旋" loading="lazy" decoding="async"></div><figcaption><span class="no">05</span><span class="tt">搁浅</span></figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="wing" aria-label="羽">
+    <div class="inner">
+      <header class="ch"><h2>羽</h2><span class="en">IN FLIGHT</span><i class="rule"></i><span class="ct">02</span></header>
+      <div class="plate" id="plate-wing" data-k="0.96">
+        <div class="track">
+          <figure class="ph" data-n="06" data-t="掠" data-full="img/pass.jpg" data-r="1.5004" style="--r:1.5004" tabindex="0" role="button" aria-label="06 掠"><div class="frame" style="--ar:2000/1333"><img src="img/pass-s.jpg" srcset="img/pass-s.jpg 960w, img/pass.jpg 2000w" sizes="(max-width: 760px) 60vw, 36vw" width="2000" height="1333" alt="海鸥掠过镜头，背后是跨海大桥" loading="lazy" decoding="async"></div><figcaption><span class="no">06</span><span class="tt">掠</span></figcaption></figure>
+          <figure class="ph" data-n="07" data-t="低首" data-full="img/bow.jpg" data-r="1.0000" style="--r:1.0000" tabindex="0" role="button" aria-label="07 低首"><div class="frame" style="--ar:1333/1333"><img src="img/bow-s.jpg" srcset="img/bow-s.jpg 960w, img/bow.jpg 1333w" sizes="(max-width: 760px) 60vw, 36vw" width="1333" height="1333" alt="冰面上低头的天鹅" loading="lazy" decoding="async"></div><figcaption><span class="no">07</span><span class="tt">低首</span></figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="water" aria-label="水">
+    <div class="inner">
+      <header class="ch"><h2>水</h2><span class="en">SURFACE</span><i class="rule"></i><span class="hint">触碰水面</span><span class="ct">02</span></header>
+      <div class="plate" id="plate-water" data-k="1.18">
+        <div class="track">
+          <figure class="ph rip" data-n="08" data-t="倒影" data-full="img/pillar.jpg" data-r="0.7500" style="--r:0.7500" tabindex="0" role="button" aria-label="08 倒影"><div class="frame" style="--ar:1125/1500"><img src="img/pillar-s.jpg" srcset="img/pillar-s.jpg 720w, img/pillar.jpg 1125w" sizes="(max-width: 760px) 70vw, 40vw" width="1125" height="1500" alt="红色柱子倒映在金鱼池里" loading="lazy" decoding="async"></div><figcaption><span class="no">08</span><span class="tt">倒影</span></figcaption></figure>
+          <figure class="ph rip" data-n="09" data-t="青" data-full="img/jade.jpg" data-r="1.3333" style="--r:1.3333" tabindex="0" role="button" aria-label="09 青"><div class="frame" style="--ar:2000/1500"><img src="img/jade-s.jpg" srcset="img/jade-s.jpg 960w, img/jade.jpg 2000w" sizes="(max-width: 760px) 70vw, 40vw" width="2000" height="1500" alt="碧绿池水里的鱼群" loading="lazy" decoding="async"></div><figcaption><span class="no">09</span><span class="tt">青</span></figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="interval" aria-label="间">
+    <div class="inner">
+      <header class="ch"><h2>间</h2><span class="en">INTERVAL</span><i class="rule"></i><span class="ct">05</span></header>
+      <div class="plate" id="plate-interval" data-k="1">
+        <div class="track">
+          <figure class="ph" data-n="10" data-t="云中" data-full="img/spire.jpg" data-r="1.7778" style="--r:1.7778" tabindex="0" role="button" aria-label="10 云中"><div class="frame" style="--ar:2000/1125"><img src="img/spire-s.jpg" srcset="img/spire-s.jpg 960w, img/spire.jpg 2000w" sizes="(max-width: 760px) 60vw, 36vw" width="2000" height="1125" alt="高楼顶端隐没在雾里" loading="lazy" decoding="async"></div><figcaption><span class="no">10</span><span class="tt">云中</span></figcaption></figure>
+          <figure class="ph" data-n="11" data-t="落日" data-full="img/ember.jpg" data-r="1.7778" style="--r:1.7778" tabindex="0" role="button" aria-label="11 落日"><div class="frame" style="--ar:2000/1125"><img src="img/ember-s.jpg" srcset="img/ember-s.jpg 960w, img/ember.jpg 2000w" sizes="(max-width: 760px) 60vw, 36vw" width="2000" height="1125" alt="雾中的红色落日与城市剪影" loading="lazy" decoding="async"></div><figcaption><span class="no">11</span><span class="tt">落日</span></figcaption></figure>
+          <figure class="ph" data-n="12" data-t="雪中" data-full="img/halt.jpg" data-r="0.7500" style="--r:0.7500" tabindex="0" role="button" aria-label="12 雪中"><div class="frame" style="--ar:1500/2000"><img src="img/halt-s.jpg" srcset="img/halt-s.jpg 720w, img/halt.jpg 1500w" sizes="(max-width: 760px) 60vw, 36vw" width="1500" height="2000" alt="大雪里的站台与列车员" loading="lazy" decoding="async"></div><figcaption><span class="no">12</span><span class="tt">雪中</span></figcaption></figure>
+          <figure class="ph" data-n="13" data-t="回廊" data-full="img/arcade.jpg" data-r="0.7500" style="--r:0.7500" tabindex="0" role="button" aria-label="13 回廊"><div class="frame" style="--ar:1500/2000"><img src="img/arcade-s.jpg" srcset="img/arcade-s.jpg 720w, img/arcade.jpg 1500w" sizes="(max-width: 760px) 60vw, 36vw" width="1500" height="2000" alt="桥下一排排拱形桥墩与青绿海水" loading="lazy" decoding="async"></div><figcaption><span class="no">13</span><span class="tt">回廊</span></figcaption></figure>
+          <figure class="ph" data-n="14" data-t="等浪" data-full="img/await.jpg" data-r="1.4993" style="--r:1.4993" tabindex="0" role="button" aria-label="14 等浪"><div class="frame" style="--ar:2000/1334"><img src="img/await-s.jpg" srcset="img/await-s.jpg 960w, img/await.jpg 2000w" sizes="(max-width: 760px) 60vw, 36vw" width="2000" height="1334" alt="冲浪者站在礁石上看浪" loading="lazy" decoding="async"></div><figcaption><span class="no">14</span><span class="tt">等浪</span></figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="sky" aria-label="天">
+    <div class="inner">
+      <header class="ch"><h2>天</h2><span class="en">THREE SKIES</span><i class="rule"></i><span class="ct">03</span></header>
+      <div class="skies" id="skies">
+          <button class="strip open" type="button" data-n="15" data-t="霞" data-full="img/sky2.jpg" data-r="4.5455" aria-expanded="true" aria-label="15 霞"><span class="sno"><span>15</span><b>霞</b></span><span class="simg"><img src="img/sky2-s.jpg" srcset="img/sky2-s.jpg 960w, img/sky2.jpg 1500w" sizes="(max-width: 760px) 80vw, 70vw" width="1500" height="330" alt="晚霞与积云" loading="lazy" decoding="async"></span><span class="chips" aria-hidden="true"><i style="--c:#0f1012"><b>#0F1012</b></i><i style="--c:#232222"><b>#232222</b></i><i style="--c:#534541"><b>#534541</b></i><i style="--c:#856052"><b>#856052</b></i><i style="--c:#da8161"><b>#DA8161</b></i></span></button>
+          <button class="strip" type="button" data-n="16" data-t="金" data-full="img/sky3.jpg" data-r="4.5455" aria-expanded="false" aria-label="16 金"><span class="sno"><span>16</span><b>金</b></span><span class="simg"><img src="img/sky3-s.jpg" srcset="img/sky3-s.jpg 960w, img/sky3.jpg 1500w" sizes="(max-width: 760px) 80vw, 70vw" width="1500" height="330" alt="被夕阳染成金色的云" loading="lazy" decoding="async"></span><span class="chips" aria-hidden="true"><i style="--c:#62432c"><b>#62432C</b></i><i style="--c:#a76d39"><b>#A76D39</b></i><i style="--c:#c68a46"><b>#C68A46</b></i><i style="--c:#e7a23f"><b>#E7A23F</b></i><i style="--c:#fcc655"><b>#FCC655</b></i></span></button>
+          <button class="strip" type="button" data-n="17" data-t="山" data-full="img/sky5.jpg" data-r="4.5455" aria-expanded="false" aria-label="17 山"><span class="sno"><span>17</span><b>山</b></span><span class="simg"><img src="img/sky5-s.jpg" srcset="img/sky5-s.jpg 960w, img/sky5.jpg 1500w" sizes="(max-width: 760px) 80vw, 70vw" width="1500" height="330" alt="山间湖泊与阴天的云" loading="lazy" decoding="async"></span><span class="chips" aria-hidden="true"><i style="--c:#2b3a49"><b>#2B3A49</b></i><i style="--c:#454f59"><b>#454F59</b></i><i style="--c:#565e68"><b>#565E68</b></i><i style="--c:#72808f"><b>#72808F</b></i><i style="--c:#9ea7b3"><b>#9EA7B3</b></i></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="edit" aria-label="改">
+    <div class="inner">
+      <header class="ch"><h2>改</h2><span class="en">BEFORE / AFTER</span><i class="rule"></i><span class="hint">拖动</span><span class="ct">04</span></header>
+      <div class="cmp">
+        <div class="cmp-stage" id="cmp-stage">
+          <img class="cmp-o" id="cmp-o" alt="">
+          <img class="cmp-f" id="cmp-f" alt="">
+          <div class="cmp-b"><img id="cmp-bi" alt=""></div>
+          <i class="cmp-bar"></i>
+          <span class="cmp-l" id="cmp-l">原片</span><span class="cmp-r" id="cmp-r">成片</span>
+          <span class="cmp-knob" id="cmp-knob" role="slider" tabindex="0" aria-label="原片与成片的分界" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">‹ ›</span>
+        </div>
+        <div class="cmp-tabs" role="tablist" aria-label="对比的照片">
+          <button type="button" role="tab" data-o="toward" data-a="1.7778" data-c="0,.1778,1,.744" data-note="裁 2.39∶1 · 暖"><span>04</span><b>向海</b></button>
+          <button type="button" role="tab" data-o="bow" data-a="1.5" data-c=".095,0,.6665,1" data-note="裁 1∶1 · 冷"><span>07</span><b>低首</b></button>
+          <button type="button" role="tab" data-o="pillar" data-a="1.3333" data-c=".15,0,.5625,1" data-note="裁 3∶4 · 润"><span>08</span><b>倒影</b></button>
+          <button type="button" role="tab" data-o="ember" data-a="1.3333" data-c="0,.1333,1,.75" data-note="裁 16∶9 · 雾"><span>11</span><b>落日</b></button>
+          <button type="button" role="tab" data-hdr="wake" data-a="1.4993" data-note="SDR ↔ HDR" hidden><span>03</span><b>航迹</b></button>
+        </div>
+        <p class="cmp-note" id="cmp-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="end" id="about" aria-label="照片">
+    <div class="wrap"><div class="inner end-grid">
+      <div class="stack-wrap">
+        <button class="stack" id="stack" type="button" aria-label="翻到下一张照片">
+          <span class="plane" id="plane">
+              <span class="print"><img src="img/watch-s.jpg" alt="" loading="lazy" decoding="async"><em>01 瞭望</em></span>
+              <span class="print"><img src="img/wake-s.jpg" alt="" loading="lazy" decoding="async"><em>03 航迹</em></span>
+              <span class="print"><img src="img/ember-s.jpg" alt="" loading="lazy" decoding="async"><em>11 落日</em></span>
+              <span class="print"><img src="img/halt-s.jpg" alt="" loading="lazy" decoding="async"><em>12 雪中</em></span>
+              <span class="print"><img src="img/arcade-s.jpg" alt="" loading="lazy" decoding="async"><em>13 回廊</em></span>
+              <span class="print"><img src="img/bow-s.jpg" alt="" loading="lazy" decoding="async"><em>07 低首</em></span>
+              <span class="print"><img src="img/pillar-s.jpg" alt="" loading="lazy" decoding="async"><em>08 倒影</em></span>
+          </span>
+        </button>
+        <p class="hint-s">轻点，翻下一张</p>
+      </div>
+    </div></div>
+    <div class="finale" aria-hidden="true"><span class="l">2026</span><span class="r">0.0°</span></div>
+  </section>
+</main>
+
+<dialog class="lb" id="lb" aria-label="照片">
+  <div class="lb-stage" id="lb-stage">
+    <img id="lb-img" alt="">
+    <button class="lb-hit prev" id="lb-hit-prev" type="button" aria-label="上一张"></button>
+    <button class="lb-hit next" id="lb-hit-next" type="button" aria-label="下一张"></button>
+  </div>
+  <div class="lb-bar">
+    <span class="no" id="lb-n">01 / 17</span><span class="tt" id="lb-t"></span>
+    <button class="chip" id="lb-hdr" type="button" hidden>HDR</button>
+    <span class="sp"></span>
+    <button class="lb-btn" id="lb-prev" type="button" aria-label="上一张">←</button>
+    <button class="lb-btn" id="lb-next" type="button" aria-label="下一张">→</button>
+  </div>
+  <button class="lb-btn lb-close" id="lb-close" type="button">关闭</button>
+</dialog>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const VS = 'attribute vec2 aPos; varying vec2 vUv; void main(){ vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }';
+
+  function program(gl, fs, names) {
+    const make = (type, src) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+      return s;
+    };
+    const p = gl.createProgram();
+    gl.attachShader(p, make(gl.VERTEX_SHADER, VS));
+    gl.attachShader(p, make(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    gl.useProgram(p);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(p, 'aPos');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const u = {};
+    for (const n of names) u[n] = gl.getUniformLocation(p, n);
+    return u;
+  }
+
+  /* ---------- Hero sea ---------- */
+  const SEA_FS = `
+    precision highp float;
+    uniform vec2 uRes, uSunPos;
+    uniform float uTime, uRoll, uHz, uGrain;
+    uniform vec3 uZen, uLow, uGlow, uDeep, uSun;
+    float hash(vec2 p) { p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
+    vec3 sky(vec3 d, vec3 sd) {
+      float e = clamp(d.y, 0.0, 1.0);
+      vec3 c = mix(uLow, uZen, pow(e, 0.42));
+      float s = max(dot(d, sd), 0.0);
+      c += uGlow * (pow(s, 9.0) * 0.2 + pow(s, 60.0) * 0.28) * (1.0 - e * 0.5);
+      c = mix(c, mix(uLow, uGlow, 0.35), exp(-e * 24.0) * 0.4);
+      c += uSun * smoothstep(0.99962, 0.99982, s) * 0.9;
+      return c;
+    }
+    void main() {
+      vec2 p = (gl_FragCoord.xy - vec2(0.5 * uRes.x, uHz * uRes.y)) / uRes.y;
+      float cr = cos(uRoll), sr = sin(uRoll);
+      p = vec2(cr * p.x - sr * p.y, sr * p.x + cr * p.y);
+      vec3 d = normalize(vec3(p, 1.25));
+      vec3 sd = normalize(vec3(uSunPos, 1.0));
+      vec3 col;
+      if (d.y > 0.0) {
+        col = sky(d, sd);
+      } else {
+        float dy = max(-d.y, 1e-4);
+        float t = 2.0 / dy;
+        float foot = t / (uRes.y * 1.25 * dy);
+        vec2 pos = d.xz * t + vec2(uTime * 0.2, uTime * 0.8);
+        float h = 0.0; vec2 g = vec2(0.0);
+        float amp = 0.11, k = 0.42;
+        vec2 dir = normalize(vec2(0.35, 1.0));
+        for (int i = 0; i < 8; i++) {
+          float fade = 1.0 - smoothstep(0.5, 1.5, k * foot);
+          float ph = dot(dir, pos) * k + uTime * sqrt(9.8 * k) * 0.5 + float(i) * 1.7;
+          h += amp * sin(ph) * fade;
+          g += amp * k * cos(ph) * dir * fade;
+          dir = vec2(0.8 * dir.x - 0.6 * dir.y, 0.6 * dir.x + 0.8 * dir.y);
+          amp *= 0.6; k *= 1.68;
+        }
+        vec3 n = normalize(vec3(-g.x, 1.0, -g.y));
+        vec3 r = reflect(d, n); r.y = abs(r.y);
+        float fr = 0.02 + 0.98 * pow(1.0 - max(dot(n, -d), 0.0), 5.0);
+        vec3 body = uDeep * (0.85 + h * 1.4);
+        col = mix(body, sky(r, sd) * 0.88, clamp(fr, 0.0, 1.0) * 0.78);
+        col += uSun * pow(max(dot(r, sd), 0.0), 320.0) * 1.4;
+        vec3 haze = mix(sky(normalize(vec3(d.x, 0.002, d.z)), sd), uDeep, 0.28);
+        col = mix(col, haze, (1.0 - exp(-t * 0.006)) * 0.85);
+      }
+      col += (hash(gl_FragCoord.xy + floor(uTime * 24.0)) - 0.5) * uGrain;
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+
+  const hero = document.querySelector('.hero');
+  const seaCanvas = document.getElementById('sea-gl');
+  const gauge = document.getElementById('gauge');
+  const arm = document.getElementById('gauge-arm');
+  const degEl = document.getElementById('gauge-deg');
+  let sgl = null, SU = null, pal = null, hz = 0.56;
+  try {
+    sgl = seaCanvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+    if (sgl) SU = program(sgl, SEA_FS, ['uRes', 'uSunPos', 'uTime', 'uRoll', 'uHz', 'uGrain', 'uZen', 'uLow', 'uGlow', 'uDeep', 'uSun']);
+  } catch (e) { sgl = null; }
+  if (!sgl) seaCanvas.remove();
+
+  function readPalette() {
+    const cs = getComputedStyle(root);
+    const rgb = n => { const h = cs.getPropertyValue(n).trim().replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255); };
+    pal = {
+      zen: rgb('--sky-zenith'), low: rgb('--sky-low'), glow: rgb('--sky-glow'), deep: rgb('--sea-deep'), sun: rgb('--sun'),
+      sx: parseFloat(cs.getPropertyValue('--sun-x')) || 0, sy: parseFloat(cs.getPropertyValue('--sun-y')) || 0.1,
+    };
+  }
+  function sizeSea() {
+    hz = (parseFloat(getComputedStyle(hero).getPropertyValue('--hz')) || 56) / 100;
+    if (!sgl) return;
+    const r = seaCanvas.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    let w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    const cap = 2.2e6;
+    if (w * h > cap) { const s = Math.sqrt(cap / (w * h)); w = Math.round(w * s); h = Math.round(h * s); }
+    seaCanvas.width = w; seaCanvas.height = h;
+    sgl.viewport(0, 0, w, h);
+  }
+  function drawSea(t, roll) {
+    if (!sgl) return;
+    const g = sgl;
+    g.uniform2f(SU.uRes, seaCanvas.width, seaCanvas.height);
+    g.uniform2f(SU.uSunPos, pal.sx * Math.min(1, seaCanvas.width / seaCanvas.height / 1.6), pal.sy);
+    g.uniform1f(SU.uTime, t);
+    g.uniform1f(SU.uRoll, roll * Math.PI / 180);
+    g.uniform1f(SU.uHz, 1 - hz);
+    g.uniform1f(SU.uGrain, 0.04);
+    g.uniform3fv(SU.uZen, pal.zen); g.uniform3fv(SU.uLow, pal.low); g.uniform3fv(SU.uGlow, pal.glow);
+    g.uniform3fv(SU.uDeep, pal.deep); g.uniform3fv(SU.uSun, pal.sun);
+    g.drawArrays(g.TRIANGLES, 0, 3);
+  }
+
+  // The electronic level: the horizon settles from a tilt, then follows the pointer with a detent at zero.
+  let roll = reduce ? 0 : 3.4, vel = 0, target = roll, settled = reduce;
+  function setGauge(a) {
+    arm.style.transform = `rotate(${a}deg)`;
+    const isLevel = Math.abs(a) < 0.05;
+    degEl.textContent = isLevel ? '0.0°' : (a > 0 ? '+' : '−') + Math.abs(a).toFixed(1) + '°';
+    gauge.classList.toggle('level', isLevel);
+  }
+  if (!reduce) setTimeout(() => { target = 0; settled = true; }, 700);
+  if (fine && !reduce) {
+    hero.addEventListener('pointermove', e => {
+      if (!settled) return;
+      const r = hero.getBoundingClientRect();
+      const v = ((e.clientX - r.left) / r.width - 0.5) * 4.4;
+      target = Math.abs(v) < 0.4 ? 0 : v;
+    });
+    hero.addEventListener('pointerleave', () => { target = 0; });
+  }
+  let heroOn = true, looping = false, last = 0;
+  const t0 = performance.now();
+  function heroFrame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+    last = now;
+    const k = 24, c = 2 * Math.sqrt(k) * 0.7;
+    vel += (k * (target - roll) - c * vel) * dt;
+    roll += vel * dt;
+    if (Math.abs(target - roll) < 0.002 && Math.abs(vel) < 0.002) { roll = target; vel = 0; }
+    setGauge(roll);
+    drawSea((now - t0) / 1000 + 6, roll);
+    if (heroOn) requestAnimationFrame(heroFrame); else looping = false;
+  }
+  function startHero() {
+    if (reduce) { setGauge(0); drawSea(8, 0); return; }
+    if (looping) return;
+    looping = true; last = performance.now();
+    requestAnimationFrame(heroFrame);
+  }
+  readPalette();
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { heroOn = e.isIntersecting; if (heroOn) startHero(); }).observe(hero);
+  }
+
+  /* ---------- Plate layouts ---------- */
+  const place = (el, x, y, w, h) => { el.style.left = x.toFixed(2) + 'px'; el.style.top = y.toFixed(2) + 'px'; el.style.width = w.toFixed(2) + 'px'; el.style.height = h.toFixed(2) + 'px'; };
+  const itemsOf = plate => [...plate.querySelectorAll('.ph')].map(el => ({ el, r: +el.dataset.r, h: +(el.dataset.h || 0.5) }));
+  const gapFor = W => (W >= 900 ? 12 : 8);
+  function rowTarget(W, vh) {
+    if (W >= 1100) return Math.min(320, vh * 0.42);
+    if (W >= 700) return Math.min(250, vh * 0.5);
+    return clamp(W * 0.44, 130, 190);
+  }
+
+  // Justified rows: choose row breaks so every row lands near the target height.
+  function justify(plate, target) {
+    const items = itemsOf(plate), n = items.length;
+    const W = plate.clientWidth, gap = gapFor(W);
+    const best = [0], cut = [0];
+    const height = (j, i) => { let s = 0; for (let k = j; k < i; k++) s += items[k].r; return (W - gap * (i - j - 1)) / s; };
+    for (let i = 1; i <= n; i++) {
+      best[i] = Infinity;
+      for (let j = Math.max(0, i - 5); j < i; j++) {
+        const H = height(j, i);
+        let c = (H - target) ** 2;
+        if (i === n && H > target) c *= 0.35;
+        if (best[j] + c < best[i]) { best[i] = best[j] + c; cut[i] = j; }
+      }
+    }
+    const rows = [];
+    for (let i = n; i > 0; i = cut[i]) rows.unshift([cut[i], i]);
+    let y = 0;
+    for (const [j, i] of rows) {
+      let H = height(j, i);
+      const cap = target * 1.3;
+      if (i === n && H > cap) H = cap;
+      let rowW = gap * (i - j - 1);
+      for (let k = j; k < i; k++) rowW += items[k].r * H;
+      let x = (W - rowW) / 2;
+      for (let k = j; k < i; k++) { const w = items[k].r * H; place(items[k].el, x, y, w, H); x += w + gap; }
+      y += H + gap;
+    }
+    plate.style.height = Math.max(0, y - gap) + 'px';
+    plate.classList.add('laid');
+  }
+
+  // 海: every horizon sits on one line. Rows on roomy screens, a swipe strip on small ones.
+  const seaPlate = document.getElementById('plate-sea');
+  const seaTrack = seaPlate.querySelector('.track');
+  const swipeHint = document.getElementById('swipe-hint');
+  function horizon(vh) {
+    const items = itemsOf(seaPlate);
+    seaTrack.querySelectorAll('.hz').forEach(l => l.remove());
+    seaPlate.classList.remove('swipe');
+    seaPlate.style.marginLeft = seaPlate.style.marginRight = '';
+    seaTrack.style.width = '';
+    const W = seaPlate.clientWidth, gap = gapFor(W), bias = 0.35;
+    const size = (it, s) => s * Math.pow(it.r, -bias);
+    const pr = seaPlate.getBoundingClientRect();
+    const line = (y, w) => {
+      const l = document.createElement('i'); l.className = 'hz'; l.style.top = y.toFixed(2) + 'px';
+      if (w) { l.style.width = w + 'px'; l.style.right = 'auto'; } else { l.style.left = -pr.left + 'px'; l.style.right = -(innerWidth - pr.right) + 'px'; }
+      l.innerHTML = '<b>0.0°</b>';
+      if (!w && innerWidth - pr.right < 52) l.firstChild.hidden = true;
+      seaTrack.prepend(l);
+    };
+    const rowsMode = W >= 760 && vh >= 560;
+    swipeHint.hidden = rowsMode;
+    if (rowsMode) {
+      let y = 0;
+      for (const row of [items.slice(0, 3), items.slice(3)]) {
+        const sw = row.reduce((a, it) => a + Math.pow(it.r, 1 - bias), 0);
+        let s = (W - gap * (row.length - 1)) / sw;
+        const tallest = Math.max(...row.map(it => size(it, s)));
+        if (tallest > vh * 0.6) s *= vh * 0.6 / tallest;
+        const above = Math.max(...row.map(it => it.h * size(it, s)));
+        const below = Math.max(...row.map(it => (1 - it.h) * size(it, s)));
+        let x = (W - (s * sw + gap * (row.length - 1))) / 2;
+        for (const it of row) { const H = size(it, s), w = H * it.r; place(it.el, x, y + above - it.h * H, w, H); x += w + gap; }
+        line(y + above);
+        y += above + below + gap * 3;
+      }
+      seaPlate.style.height = (y - gap * 3) + 'px';
+    } else {
+      const r = seaPlate.getBoundingClientRect();
+      const left = r.left, right = innerWidth - r.right;
+      seaPlate.classList.add('swipe');
+      seaPlate.style.marginLeft = -left + 'px';
+      seaPlate.style.marginRight = -right + 'px';
+      const maxW = Math.max(...items.map(it => Math.pow(it.r, 1 - bias)));
+      const maxH = Math.max(...items.map(it => Math.pow(it.r, -bias)));
+      const s = Math.min((W * 0.9) / maxW, (vh * 0.56) / maxH);
+      const above = Math.max(...items.map(it => it.h * size(it, s)));
+      const below = Math.max(...items.map(it => (1 - it.h) * size(it, s)));
+      let x = left;
+      for (const it of items) { const H = size(it, s), w = H * it.r; place(it.el, x, above - it.h * H, w, H); x += w + gap * 2; }
+      const total = x - gap * 2 + right;
+      seaTrack.style.width = total + 'px';
+      line(above, total);
+      seaPlate.style.height = (above + below) + 'px';
+    }
+    seaPlate.classList.add('laid');
+  }
+
+  /* ---------- 水: ripples ---------- */
+  const RIP_FS = `
+    precision mediump float;
+    varying vec2 vUv;
+    uniform sampler2D uTex;
+    uniform float uAspect, uTime;
+    uniform vec4 uR[10];
+    void main() {
+      vec2 g = vec2(0.0);
+      float hs = 0.0;
+      for (int i = 0; i < 10; i++) {
+        vec4 r = uR[i];
+        float age = uTime - r.z;
+        if (r.w > 0.0 && age > 0.0 && age < 4.5) {
+          vec2 dv = (vUv - r.xy) * vec2(uAspect, 1.0);
+          float d = length(dv) + 1e-4;
+          float x = d - age * 0.26;
+          float env = exp(-x * x * 160.0) * exp(-age * 1.15) * r.w * smoothstep(0.0, 0.06, age);
+          float ph = x * 110.0;
+          hs += sin(ph) * env;
+          g += cos(ph) * env * (dv / d);
+        }
+      }
+      vec2 off = g / vec2(uAspect, 1.0) * 0.007;
+      vec3 col = texture2D(uTex, clamp(vUv - off, vec2(0.001), vec2(0.999))).rgb;
+      vec3 L = normalize(vec3(-0.4, 0.5, 0.77));
+      vec3 n = normalize(vec3(-g * 0.55, 1.0));
+      col += max(pow(max(dot(n, L), 0.0), 80.0) - pow(L.z, 80.0), 0.0) * 0.5;
+      col *= 1.0 + hs * 0.05;
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+  class Ripple {
+    constructor(fig) {
+      this.frame = fig.querySelector('.frame');
+      this.img = this.frame.querySelector('img');
+      const c = this.canvas = document.createElement('canvas');
+      c.setAttribute('aria-hidden', 'true');
+      const gl = this.gl = c.getContext('webgl', { antialias: false, alpha: false });
+      if (!gl) return;
+      try { this.u = program(gl, RIP_FS, ['uTex', 'uAspect', 'uTime', 'uR']); } catch (e) { this.gl = null; return; }
+      this.frame.prepend(c);
+      this.ripples = []; this.tex = null; this.running = false; this.lastSpawn = { x: -1, y: -1, t: 0 };
+      this.data = new Float32Array(40);
+      const load = () => this.upload();
+      if (this.img.complete && this.img.naturalWidth) load(); else this.img.addEventListener('load', load, { once: true });
+      new ResizeObserver(() => this.size()).observe(this.frame);
+      const at = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height]; };
+      c.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { const [x, y] = at(e); this.add(x, y, 1); } });
+      c.addEventListener('pointermove', e => {
+        if (e.pointerType !== 'mouse') return;
+        const [x, y] = at(e), now = performance.now(), l = this.lastSpawn;
+        if (Math.hypot(x - l.x, y - l.y) > 0.06 || now - l.t > 260) { this.add(x, y, 0.42); this.lastSpawn = { x, y, t: now }; }
+      });
+      fig.dataset.touchRipple = '1';
+    }
+    upload() {
+      const gl = this.gl;
+      this.tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, this.tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.img); } catch (e) { this.tex = null; return; }
+      this.size();
+    }
+    size() {
+      if (!this.tex) return;
+      const r = this.frame.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+      if (!r.width || !r.height) return;
+      this.canvas.width = Math.round(r.width * dpr);
+      this.canvas.height = Math.round(r.height * dpr);
+      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      this.draw(performance.now() / 1000);
+      this.canvas.classList.add('ready');
+    }
+    add(x, y, amp) {
+      if (!this.tex) return;
+      this.ripples.push([x, y, performance.now() / 1000, reduce ? amp * 0.5 : amp]);
+      if (this.ripples.length > 10) this.ripples.shift();
+      if (!this.running) { this.running = true; requestAnimationFrame(t => this.tick(t)); }
+    }
+    tick(ms) {
+      const t = ms / 1000;
+      this.ripples = this.ripples.filter(r => t - r[2] < 4.5);
+      this.draw(t);
+      if (this.ripples.length) requestAnimationFrame(n => this.tick(n)); else { this.running = false; this.draw(t); }
+    }
+    draw(t) {
+      const gl = this.gl;
+      this.data.fill(0);
+      this.ripples.forEach((r, i) => this.data.set(r, i * 4));
+      gl.uniform1i(this.u.uTex, 0);
+      gl.uniform1f(this.u.uAspect, this.canvas.width / this.canvas.height);
+      gl.uniform1f(this.u.uTime, t);
+      gl.uniform4fv(this.u.uR, this.data);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+  }
+  document.querySelectorAll('.rip').forEach(f => new Ripple(f));
+
+  /* ---------- 天: swatch book ---------- */
+  const skies = document.getElementById('skies');
+  const strips = [...skies.querySelectorAll('.strip')];
+  function sizeSkies() {
+    skies.classList.toggle('flat', skies.clientWidth < 760);
+    const w = strips[0].querySelector('.simg').clientWidth;
+    if (w) skies.style.setProperty('--open', Math.round(w / 4.5455) + 'px');
+  }
+
+  /* ---------- Lightbox ---------- */
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  const lbN = document.getElementById('lb-n'), lbT = document.getElementById('lb-t'), lbHdr = document.getElementById('lb-hdr');
+  const frames = [...document.querySelectorAll('[data-full]')];
+  const hdrScreen = matchMedia('(dynamic-range: high)').matches;
+  const canLimit = !!(window.CSS && CSS.supports('dynamic-range-limit', 'standard'));
+  let cur = -1;
+  function show(i) {
+    cur = (i + frames.length) % frames.length;
+    const f = frames[cur];
+    const thumb = f.querySelector('img');
+    const shown = cur;
+    lbImg.classList.add('out');
+    setTimeout(() => {
+      if (shown !== cur) return;
+      lbImg.src = thumb.currentSrc || thumb.src;
+      lbImg.alt = thumb.alt || '';
+      lbImg.style.removeProperty('dynamic-range-limit');
+      lbImg.classList.remove('out');
+      const full = new Image();
+      full.src = f.dataset.full;
+      (full.decode ? full.decode() : Promise.resolve()).then(() => { if (shown === cur) lbImg.src = full.src; }, () => {});
+    }, lb.open ? 160 : 0);
+    lbN.textContent = `${f.dataset.n} / ${frames.length}`;
+    lbT.textContent = f.dataset.t;
+    const hdr = f.dataset.hdr === '1';
+    lbHdr.hidden = !hdr;
+    if (hdr) {
+      lbHdr.textContent = 'HDR';
+      lbHdr.disabled = !(hdrScreen && canLimit);
+      lbHdr.setAttribute('aria-pressed', 'true');
+      lbHdr.title = hdrScreen ? '' : 'HDR 屏幕可见';
+    }
+    [cur - 1, cur + 1].forEach(k => { new Image().src = frames[(k + frames.length) % frames.length].dataset.full; });
+  }
+  function openAt(i) {
+    show(i);
+    root.style.overflow = 'hidden';
+    if (lb.showModal) lb.showModal(); else lb.setAttribute('open', '');
+    document.getElementById('lb-close').focus();
+  }
+  function close() { if (lb.close) lb.close(); else lb.removeAttribute('open'); root.style.overflow = ''; }
+  lb.addEventListener('close', () => { root.style.overflow = ''; if (frames[cur]) frames[cur].focus({ preventScroll: true }); });
+  document.getElementById('lb-close').addEventListener('click', close);
+  [['lb-prev', -1], ['lb-next', 1], ['lb-hit-prev', -1], ['lb-hit-next', 1]].forEach(([id, d]) =>
+    document.getElementById(id).addEventListener('click', () => show(cur + d)));
+  lb.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+  });
+  let sx = null;
+  const stage = document.getElementById('lb-stage');
+  stage.addEventListener('pointerdown', e => { sx = e.pointerType === 'mouse' ? null : e.clientX; });
+  stage.addEventListener('pointerup', e => { if (sx !== null && Math.abs(e.clientX - sx) > 48) show(cur + (e.clientX < sx ? 1 : -1)); sx = null; });
+  lbHdr.addEventListener('click', () => {
+    const toSdr = lbHdr.getAttribute('aria-pressed') === 'true';
+    lbImg.style.setProperty('dynamic-range-limit', toSdr ? 'standard' : 'no-limit');
+    lbHdr.textContent = toSdr ? 'SDR' : 'HDR';
+    lbHdr.setAttribute('aria-pressed', String(!toSdr));
+  });
+  frames.forEach((f, i) => {
+    f.addEventListener('click', e => {
+      if (f.classList.contains('strip') && !skies.classList.contains('flat') && !f.classList.contains('open')) {
+        strips.forEach(x => { const on = x === f; x.classList.toggle('open', on); x.setAttribute('aria-expanded', String(on)); });
+        return;
+      }
+      if (f.dataset.touchRipple && e.pointerType && e.pointerType !== 'mouse') return;
+      openAt(i);
+    });
+    if (f.tagName === 'FIGURE') f.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAt(i); } });
+  });
+
+  /* ---------- Darkroom reveal and chapter dots ---------- */
+  if ('IntersectionObserver' in window) {
+    if (!reduce) {
+      const dev = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.remove('pre'); dev.unobserve(e.target); }
+      }), { threshold: 0.15 });
+      const vh = innerHeight;
+      document.querySelectorAll('.ph').forEach(f => {
+        if (f.getBoundingClientRect().top > vh) { f.classList.add('pre'); dev.observe(f); }
+      });
+    }
+    const links = new Map([...document.querySelectorAll('.bar nav a')].map(a => [a.hash.slice(1), a]));
+    const spy = new IntersectionObserver(es => es.forEach(e => {
+      const a = links.get(e.target.id);
+      if (a) a.classList.toggle('on', e.isIntersecting);
+    }), { rootMargin: '-45% 0px -54% 0px' });
+    links.forEach((a, id) => { const s = document.getElementById(id); if (s) spy.observe(s); });
+  }
+
+  /* ---------- 改: before / after ---------- */
+  const cmp = document.getElementById('cmp-stage');
+  const cmpO = document.getElementById('cmp-o'), cmpF = document.getElementById('cmp-f'), cmpB = document.getElementById('cmp-bi');
+  const knob = document.getElementById('cmp-knob'), note = document.getElementById('cmp-note');
+  const tabs = [...document.querySelectorAll('.cmp-tabs button')];
+  const hdrTab = tabs.find(t => t.dataset.hdr);
+  if (hdrScreen && canLimit) { hdrTab.hidden = false; document.querySelector('#edit .ct').textContent = '05'; }
+  let split = 50;
+  const setSplit = v => {
+    split = clamp(v, 0, 100);
+    cmp.style.setProperty('--x', split.toFixed(2) + '%');
+    knob.setAttribute('aria-valuenow', Math.round(split));
+    document.getElementById('cmp-l').style.opacity = split < 12 ? 0 : 1;
+    document.getElementById('cmp-r').style.opacity = split > 88 ? 0 : 1;
+  };
+  function pick(t) {
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b === t)));
+    const big = cmp.clientWidth * (devicePixelRatio || 1) > 1100;
+    cmp.classList.add('out');
+    setTimeout(() => {
+      const hdr = !!t.dataset.hdr;
+      cmp.classList.toggle('hdr', hdr);
+      cmp.style.setProperty('--a', t.dataset.a);
+      if (hdr) {
+        const src = `img/${t.dataset.hdr}${big ? '' : '-s'}.jpg`;
+        cmpO.src = cmpB.src = src;
+        document.getElementById('cmp-l').textContent = 'SDR';
+        document.getElementById('cmp-r').textContent = 'HDR';
+      } else {
+        const id = t.dataset.o, [x, y, w, h] = t.dataset.c.split(',');
+        cmpO.src = cmpB.src = `img/${id}-o${big ? '' : 's'}.jpg`;
+        cmpF.src = `img/${id}${big ? '' : '-s'}.jpg`;
+        Object.entries({ cx: x, cy: y, cw: w, ch: h }).forEach(([k, v]) => cmp.style.setProperty('--' + k, v));
+        document.getElementById('cmp-l').textContent = '原片';
+        document.getElementById('cmp-r').textContent = '成片';
+      }
+      note.textContent = t.dataset.note;
+      const done = () => cmp.classList.remove('out');
+      Promise.all([cmpO, cmpF, cmpB].map(i => i.decode ? i.decode().catch(() => {}) : null)).then(done);
+    }, cmp.style.getPropertyValue('--a') ? 200 : 0);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => pick(t)));
+  pick(tabs[0]);
+  setSplit(50);
+  const fromEvent = e => { const r = cmp.getBoundingClientRect(); setSplit((e.clientX - r.left) / r.width * 100); };
+  cmp.addEventListener('pointerdown', e => {
+    if (e.button) return;
+    fromEvent(e);
+    cmp.setPointerCapture(e.pointerId);
+    const move = ev => fromEvent(ev);
+    const up = () => { cmp.removeEventListener('pointermove', move); cmp.removeEventListener('pointerup', up); cmp.removeEventListener('pointercancel', up); };
+    cmp.addEventListener('pointermove', move); cmp.addEventListener('pointerup', up); cmp.addEventListener('pointercancel', up);
+  });
+  knob.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 10 : 2;
+    if (e.key === 'ArrowLeft') setSplit(split - step);
+    else if (e.key === 'ArrowRight') setSplit(split + step);
+    else if (e.key === 'Home') setSplit(0);
+    else if (e.key === 'End') setSplit(100);
+    else return;
+    e.preventDefault();
+  });
+  if (!reduce && 'IntersectionObserver' in window) {
+    const sweep = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      sweep.disconnect();
+      const t0 = performance.now();
+      const run = now => {
+        const k = Math.min(1, (now - t0) / 1800);
+        setSplit(50 + Math.sin(k * Math.PI * 2) * 28 * (1 - k));
+        if (k < 1) requestAnimationFrame(run);
+      };
+      setTimeout(() => requestAnimationFrame(run), 500);
+    }, { threshold: 0.6 });
+    sweep.observe(cmp);
+  }
+
+  /* ---------- A stack of prints ---------- */
+  const stack = document.getElementById('stack');
+  const plane = document.getElementById('plane');
+  const prints = [...plane.querySelectorAll('.print')];
+  const scatter = [[-7, 5, -8], [6, -4, 5], [-3, -7, 10], [8, 6, -3], [-6, -2, 3], [4, 7, -10], [0, 0, 2]];
+  prints.forEach((p, i) => {
+    const [x, y, r] = scatter[i % scatter.length];
+    p.style.setProperty('--x', x + '%'); p.style.setProperty('--y', y + '%'); p.style.setProperty('--r', r + 'deg');
+  });
+  let order = prints.slice(), busy = false;
+  const stackUp = () => order.forEach((p, i) => p.style.setProperty('--z', (i * 3) + 'px'));
+  stackUp();
+  stack.addEventListener('click', () => {
+    if (busy) return;
+    busy = true;
+    const top = order[order.length - 1];
+    top.classList.add('fly');
+    setTimeout(() => {
+      order.pop(); order.unshift(top); stackUp();
+      top.classList.remove('fly');
+      setTimeout(() => { busy = false; }, reduce ? 0 : 650);
+    }, reduce ? 0 : 560);
+  });
+  if (fine && !reduce) {
+    const end = document.getElementById('about');
+    end.addEventListener('pointermove', e => {
+      const r = stack.getBoundingClientRect();
+      const dx = clamp((e.clientX - (r.left + r.width / 2)) / r.width, -1, 1);
+      const dy = clamp((e.clientY - (r.top + r.height / 2)) / r.height, -1, 1);
+      plane.style.setProperty('--rx', (50 - dy * 9).toFixed(2) + 'deg');
+      plane.style.setProperty('--rz', (-14 + dx * 11).toFixed(2) + 'deg');
+    });
+    end.addEventListener('pointerleave', () => { plane.style.removeProperty('--rx'); plane.style.removeProperty('--rz'); });
+  }
+
+  /* ---------- Layout ---------- */
+  let lastW = 0, lastH = 0;
+  function layout() {
+    const vw = innerWidth, vh = innerHeight;
+    if (lastW && vw === lastW && Math.abs(vh - lastH) < 120) return;
+    lastW = vw; lastH = vh;
+    sizeSea(); drawSea(8, roll);
+    horizon(vh);
+    document.querySelectorAll('.plate[data-k]').forEach(p => justify(p, rowTarget(p.clientWidth, vh) * +p.dataset.k));
+    sizeSkies();
+  }
+  layout();
+  startHero();
+  let rz = 0;
+  addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); });
+})();
+</script>
+
+</body>
+</html>
